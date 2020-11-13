@@ -1,0 +1,24 @@
+[package]
+name = "tracing-syslog"
+version = "0.1.0"
+authors = ["Andrey Ermilov <andrerm@ya.ru>"]
+edition = "2018"
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/tokio-rs/tracing"
+homepage = "https://tokio.rs"
+description = "Syslog subscriber for `tracing`"
+categories = [
+    "development-tools::debugging",
+    "development-tools::profiling",
+]
+keywords = ["tracing", "syslog", "rsyslog"]
+
+[dependencies]
+tracing = { git = "https://github.com/tokio-rs/tracing" }
+tracing-core = { git = "https://github.com/tokio-rs/tracing" }
+tracing-subscriber = { git = "https://github.com/tokio-rs/tracing" }
+chrono = "0.4"
+
+[[example]]
+name = "syslog"
