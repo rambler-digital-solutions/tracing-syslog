@@ -9,7 +9,7 @@ preserving structured information.
 *Compiler support: [requires `rustc` 1.42+][msrv]*
 
 [msrv]: #supported-rust-versions
-[tracing]: https://crates.io/crates/tracing
+[tracing]: https://github.com/tokio-rs/tracing 
 [syslog]: https://tools.ietf.org/html/rfc5424
 
 ## Supported Rust Versions

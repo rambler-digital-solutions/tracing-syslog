@@ -2,14 +2,8 @@ pub trait SyslogMessage {
     fn message(&self, pairs: Vec<(String, String)>) -> String;
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct ELKMessage;
-
-impl Default for ELKMessage {
-    fn default() -> Self {
-        ELKMessage
-    }
-}
 
 impl SyslogMessage for ELKMessage {
     fn message(&self, pairs: Vec<(String, String)>) -> String {
