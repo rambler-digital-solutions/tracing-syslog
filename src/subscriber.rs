@@ -1,59 +1,59 @@
 use crate::{SyslogFormat, SyslogMessage, Formatter3164, ELKMessage};
 use crate::backend::LoggerBackend;
 
-type DefaultBuilder = SSubscriberBuilder<Formatter3164, ELKMessage>;
-type DefaultSubscriber = SSubscriber<Formatter3164, ELKMessage>;
+type DefaultBuilder = SubscriberBuilder<Formatter3164, ELKMessage>;
+type DefaultSubscriber = Subscriber<Formatter3164, ELKMessage>;
 
 /// Builder for subscriber.
 #[derive(Debug)]
-pub struct SSubscriberBuilder<F, M>
+pub struct SubscriberBuilder<F, M>
 where
     F: SyslogFormat,
     M: SyslogMessage,
 {
     backend: LoggerBackend,
-    formatter: F,
-    message: M,
+    header_formatter: F,
+    message_formatter: M,
 }
 
-impl<F, M> SSubscriberBuilder<F, M>
+impl<F, M> SubscriberBuilder<F, M>
 where
     F: SyslogFormat,
     M: SyslogMessage,
 {
-    fn set_header_formatter<E>(self, formatter: E) -> SSubscriberBuilder<E, M>
+    pub fn set_header_formatter<E>(self, header_formatter: E) -> SubscriberBuilder<E, M>
     where
         E: SyslogFormat,
     {
-        SSubscriberBuilder {
-            formatter,
+        SubscriberBuilder {
             backend: self.backend,
-            message: self.message,
+            header_formatter,
+            message_formatter: self.message_formatter,
         }
     }
-    fn set_message_formatter<D>(self, message: D) -> SSubscriberBuilder<F, D>
+    pub fn set_message_formatter<D>(self, message_formatter: D) -> SubscriberBuilder<F, D>
     where
         D: SyslogMessage,
     {
-        SSubscriberBuilder {
-            formatter: self.formatter,
+        SubscriberBuilder {
             backend: self.backend,
-            message,
+            header_formatter: self.header_formatter,
+            message_formatter,
         }
     }
-    fn set_backend(self, backend: LoggerBackend) -> SSubscriberBuilder<F, M>
+    pub fn set_backend(self, backend: LoggerBackend) -> SubscriberBuilder<F, M>
     {
-        SSubscriberBuilder {
-            formatter: self.formatter,
+        SubscriberBuilder {
             backend,
-            message: self.message,
+            header_formatter: self.header_formatter,
+            message_formatter: self.message_formatter,
         }
     }
-    fn finish(self) -> SSubscriber<F, M> {
-        SSubscriber {
-            formatter: self.formatter,
+    pub fn finish(self) -> Subscriber<F, M> {
+        Subscriber {
             backend: self.backend,
-            message: self.message,
+            header_formatter: self.header_formatter,
+            message_formatter: self.message_formatter,
         }
     }
 }
@@ -61,49 +61,33 @@ where
 impl Default for DefaultBuilder {
     fn default() -> DefaultBuilder {
         let backend = LoggerBackend::default();
-        let formatter = Formatter3164::default();
-        let message = ELKMessage::default();
-        Self { backend, formatter, message }
+        let header_formatter = Formatter3164::default();
+        let message_formatter = ELKMessage::default();
+        Self { backend, header_formatter, message_formatter }
     }
 }
 
 /// Subscriber.
 #[derive(Debug)]
-pub struct SSubscriber<F, M>
+pub struct Subscriber<F, M>
 where
     F: SyslogFormat,
     M: SyslogMessage,
 {
-    backend: LoggerBackend,
-    formatter: F,
-    message: M,
+    pub backend: LoggerBackend,
+    pub header_formatter: F,
+    pub message_formatter: M,
 }
 
-impl<F, M> SSubscriber<F, M>
+impl<F, M> Subscriber<F, M>
 where
     F: SyslogFormat,
     M: SyslogMessage,
 {
     pub fn builder() -> DefaultBuilder {
         let backend = LoggerBackend::default();
-        let formatter = Formatter3164::default();
-        let message = ELKMessage::default();
-        SSubscriberBuilder { backend, formatter, message }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::{Formatter3164, ELKMessage};
-
-    #[test]
-    fn test_one() {
-        let subscriber = SSubscriber::builder()
-            .set_backend(LoggerBackend::default())
-            .set_header_formatter(Formatter3164::default())
-            .set_message_formatter(ELKMessage::default())
-            .finish();
-        assert_eq!(1, 1);
+        let header_formatter = Formatter3164::default();
+        let message_formatter = ELKMessage::default();
+        SubscriberBuilder { backend, header_formatter, message_formatter }
     }
 }
