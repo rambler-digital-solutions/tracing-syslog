@@ -37,6 +37,7 @@ pub struct Formatter3164 {
     pub facility: Facilities,
     pub severity: Severity,
     pub hostname: String,
+    pub tag: String,
     pub pid: u32,
 }
 
@@ -52,6 +53,7 @@ impl Default for Formatter3164 {
             facility: Facilities::Local0,
             severity: Severity::Debug,
             hostname: String::from("hostname"),
+            tag: String::from("tag"),
             pid: 1,
         }
     }
@@ -61,11 +63,12 @@ impl SyslogFormat for Formatter3164 {
     fn format<T: Display>(&self, message: T) -> String {
         let dt = Local::now();
         format!(
-            "<{pri}>{date} {hostname} [{pid}]: {message}",
+            "<{pri}>{date} {hostname} {tag}[{pid}]: {message}",
             pri = self.priority(),
             date = dt.format("%b %d %T"),
             hostname = self.hostname,
             pid = self.pid,
+            tag = self.tag,
             message = message,
         )
     }
@@ -81,6 +84,7 @@ mod tests {
             facility: Facilities::Local0,
             severity: Severity::Alert,
             hostname: String::from("Host"),
+            tag: String::from("Tag"),
             pid: 1,
         };
         let pri = formatter.priority();
@@ -93,12 +97,13 @@ mod tests {
             facility: Facilities::Local0,
             severity: Severity::Alert,
             hostname: String::from("Host"),
+            tag: String::from("Tag"),
             pid: 1,
         };
         let syslog_message = formatter.format("message");
         assert_ne!(
             syslog_message,
-            String::from("<129>Nov 12 17:14:05 Host [1]: message")
+            String::from("<129>Nov 12 17:14:05 Host Tag[1]: message")
         );
     }
 }
