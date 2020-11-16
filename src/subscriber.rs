@@ -2,7 +2,6 @@ use crate::{SyslogFormat, SyslogMessage, Formatter3164, ELKMessage};
 use crate::backend::LoggerBackend;
 
 type DefaultBuilder = SubscriberBuilder<Formatter3164, ELKMessage>;
-type DefaultSubscriber = Subscriber<Formatter3164, ELKMessage>;
 
 /// Builder for subscriber.
 #[derive(Debug)]

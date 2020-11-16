@@ -1,5 +1,4 @@
 use tracing_subscriber::prelude::*;
-use tracing_syslog;
 use tracing::{event, Level};
 use tracing_syslog::{Formatter3164, ELKMessage};
 

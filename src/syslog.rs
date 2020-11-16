@@ -1,11 +1,10 @@
 use std::cmp::Ordering;
 use std::fmt;
 
-use tracing_core::{event::Event, field::Visit, Collect, Field, Level};
+use tracing_core::{Collect, event::Event, Field, field::Visit, Level};
 use tracing_subscriber::{registry::LookupSpan, subscribe::Context};
 
-use crate::backend::LoggerBackend;
-use crate::{ELKMessage, Formatter3164, SyslogFormat, SyslogMessage, Subscriber};
+use crate::{Subscriber, SyslogFormat, SyslogMessage};
 
 impl<C, F, M> tracing_subscriber::Subscribe<C> for Subscriber<F, M>
 where
