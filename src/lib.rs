@@ -8,3 +8,4 @@ pub use format::{Facilities, Formatter3164, Severity, SyslogFormat};
 pub use message::{ELKMessage, SyslogMessage};
 pub use syslog::*;
 pub use subscriber::{Subscriber, SubscriberBuilder};
+pub use backend::LoggerBackendBuilder;
