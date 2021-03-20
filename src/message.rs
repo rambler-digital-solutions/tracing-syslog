@@ -1,13 +1,4 @@
-use lazy_static::lazy_static;
-
-lazy_static! {
-    static ref HOSTNAME: String = {
-        match std::env::var("HOSTNAME") {
-            Ok(value) => value,
-            Err(_) => "undefined".to_string(),
-        }
-    };
-}
+use crate::HOSTNAME;
 
 pub trait SyslogMessage {
     fn message(&self, pairs: Vec<(String, String)>) -> String;
