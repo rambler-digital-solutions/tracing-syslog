@@ -15,9 +15,9 @@ categories = [
 keywords = ["tracing", "syslog", "rsyslog"]
 
 [dependencies]
-tracing = { git = "https://github.com/tokio-rs/tracing" }
-tracing-core = { git = "https://github.com/tokio-rs/tracing" }
-tracing-subscriber = { git = "https://github.com/tokio-rs/tracing" }
+tracing = { git = "https://github.com/tokio-rs/tracing", rev = "0e8f920" }
+tracing-core = { git = "https://github.com/tokio-rs/tracing", rev = "0e8f920" }
+tracing-subscriber = { git = "https://github.com/tokio-rs/tracing", rev = "0e8f920" }
 chrono = "0.4"
 
 [[example]]
