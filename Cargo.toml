@@ -19,6 +19,7 @@ tracing = { git = "https://github.com/tokio-rs/tracing" }
 tracing-core = { git = "https://github.com/tokio-rs/tracing" }
 tracing-subscriber = { git = "https://github.com/tokio-rs/tracing" }
 chrono = "0.4"
+lazy_static = "1.4"
 
 [[example]]
 name = "syslog"

@@ -1,3 +1,5 @@
+use crate::HOSTNAME;
+
 pub trait SyslogMessage {
     fn message(&self, pairs: Vec<(String, String)>) -> String;
 }
@@ -16,8 +18,27 @@ impl SyslogMessage for ELKMessage {
         format!(
             "{{{:?}: {:?}, {:?}: {:?}, {}}}",
             "@timestamp", now,
-            "hostname", "hostname",
+            "hostname", HOSTNAME.to_string(),
             formatted,
         )
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_hostname() {
+        std::env::set_var("HOSTNAME", "test_hostname".to_string());
+        let message = ELKMessage.message(vec![]);
+        assert!(message.contains("\"hostname\": \"test_hostname\""))
+    }
+
+    #[test]
+    fn test_pairs() {
+        let pairs = vec![("key_1".to_string(), "value_1".to_string())];
+        let message = ELKMessage.message(pairs);
+        assert!(message.contains("\"key_1\": value_1"))
     }
 }
