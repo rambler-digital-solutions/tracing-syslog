@@ -1,24 +1,27 @@
 use std::cmp::Ordering;
-use std::fmt;
+use tracing_core::{
+    event::Event,
+    field::{Field, Visit},
+    metadata::Level,
+    Subscriber,
+};
+use tracing_subscriber::{layer::Context, registry::LookupSpan};
 
-use tracing_core::{Collect, event::Event, Field, field::Visit, Level};
-use tracing_subscriber::{registry::LookupSpan, subscribe::Context};
+use crate::{Layer, SyslogFormat, SyslogMessage};
 
-use crate::{Subscriber, SyslogFormat, SyslogMessage};
-
-impl<C, F, M> tracing_subscriber::Subscribe<C> for Subscriber<F, M>
+impl<S, F, M> tracing_subscriber::Layer<S> for Layer<F, M>
 where
-    C: Collect + for<'span> LookupSpan<'span>,
+    S: Subscriber + for<'a> LookupSpan<'a>,
     F: 'static + SyslogFormat,
     M: 'static + SyslogMessage,
 {
-    fn on_event(&self, event: &Event, _: Context<C>) {
+    fn on_event(&self, event: &Event<'_>, _ctx: Context<'_, S>) {
         let mut pairs: Vec<(String, String)> = Vec::with_capacity(256);
         if let Ordering::Less = event.metadata().level().cmp(&Level::TRACE) {
             event.record(&mut EventVisitor::new(&mut pairs));
             let message = self.message_formatter.message(pairs);
             let message = self.header_formatter.format(message);
-            let _ = &self.backend.send(&message.as_bytes());
+            let _ = &self.backend.send(message.as_bytes());
         }
     }
 }
@@ -35,7 +38,7 @@ impl<'a> EventVisitor<'a> {
 }
 
 impl Visit for EventVisitor<'_> {
-    fn record_debug(&mut self, field: &Field, value: &dyn fmt::Debug) {
+    fn record_debug(&mut self, field: &Field, value: &dyn std::fmt::Debug) {
         let key = field.name().to_string();
         let value = format!("{:?}", value);
         self.pairs.push((key, value));

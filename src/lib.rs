@@ -2,12 +2,12 @@ mod backend;
 mod format;
 mod message;
 mod syslog;
-mod subscriber;
+mod layer;
 
 pub use format::{Facilities, Formatter3164, Severity, SyslogFormat};
 pub use message::{ELKMessage, SyslogMessage};
 pub use syslog::*;
-pub use subscriber::{Subscriber, SubscriberBuilder};
+pub use layer::{Layer, LayerBuilder};
 pub use backend::LoggerBackendBuilder;
 
 #[macro_use]

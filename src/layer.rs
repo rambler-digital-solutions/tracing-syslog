@@ -1,11 +1,9 @@
-use crate::{SyslogFormat, SyslogMessage, Formatter3164, ELKMessage};
 use crate::backend::LoggerBackend;
+use crate::{ELKMessage, Formatter3164, SyslogFormat, SyslogMessage};
 
-type DefaultBuilder = SubscriberBuilder<Formatter3164, ELKMessage>;
-
-/// Builder for subscriber.
+/// Builder for layer.
 #[derive(Debug)]
-pub struct SubscriberBuilder<F, M>
+pub struct LayerBuilder<F = Formatter3164, M = ELKMessage>
 where
     F: SyslogFormat,
     M: SyslogMessage,
@@ -15,41 +13,40 @@ where
     message_formatter: M,
 }
 
-impl<F, M> SubscriberBuilder<F, M>
+impl<F, M> LayerBuilder<F, M>
 where
     F: SyslogFormat,
     M: SyslogMessage,
 {
-    pub fn set_header_formatter<E>(self, header_formatter: E) -> SubscriberBuilder<E, M>
+    pub fn set_header_formatter<E>(self, header_formatter: E) -> LayerBuilder<E, M>
     where
         E: SyslogFormat,
     {
-        SubscriberBuilder {
+        LayerBuilder {
             backend: self.backend,
             header_formatter,
             message_formatter: self.message_formatter,
         }
     }
-    pub fn set_message_formatter<D>(self, message_formatter: D) -> SubscriberBuilder<F, D>
+    pub fn set_message_formatter<D>(self, message_formatter: D) -> LayerBuilder<F, D>
     where
         D: SyslogMessage,
     {
-        SubscriberBuilder {
+        LayerBuilder {
             backend: self.backend,
             header_formatter: self.header_formatter,
             message_formatter,
         }
     }
-    pub fn set_backend(self, backend: LoggerBackend) -> SubscriberBuilder<F, M>
-    {
-        SubscriberBuilder {
+    pub fn set_backend(self, backend: LoggerBackend) -> LayerBuilder<F, M> {
+        LayerBuilder {
             backend,
             header_formatter: self.header_formatter,
             message_formatter: self.message_formatter,
         }
     }
-    pub fn finish(self) -> Subscriber<F, M> {
-        Subscriber {
+    pub fn finish(self) -> Layer<F, M> {
+        Layer {
             backend: self.backend,
             header_formatter: self.header_formatter,
             message_formatter: self.message_formatter,
@@ -57,18 +54,22 @@ where
     }
 }
 
-impl Default for DefaultBuilder {
-    fn default() -> DefaultBuilder {
+impl Default for LayerBuilder {
+    fn default() -> Self {
         let backend = LoggerBackend::default();
         let header_formatter = Formatter3164::default();
         let message_formatter = ELKMessage::default();
-        Self { backend, header_formatter, message_formatter }
+        Self {
+            backend,
+            header_formatter,
+            message_formatter,
+        }
     }
 }
 
-/// Subscriber.
+/// Syslog Layer.
 #[derive(Debug)]
-pub struct Subscriber<F, M>
+pub struct Layer<F, M>
 where
     F: SyslogFormat,
     M: SyslogMessage,
@@ -78,15 +79,12 @@ where
     pub message_formatter: M,
 }
 
-impl<F, M> Subscriber<F, M>
+impl<F, M> Layer<F, M>
 where
     F: SyslogFormat,
     M: SyslogMessage,
 {
-    pub fn builder() -> DefaultBuilder {
-        let backend = LoggerBackend::default();
-        let header_formatter = Formatter3164::default();
-        let message_formatter = ELKMessage::default();
-        SubscriberBuilder { backend, header_formatter, message_formatter }
+    pub fn builder() -> LayerBuilder<Formatter3164, ELKMessage> {
+        LayerBuilder::default()
     }
 }

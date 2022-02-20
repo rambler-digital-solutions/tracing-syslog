@@ -3,9 +3,10 @@ use tracing::{event, Level};
 use tracing_syslog::{Formatter3164, ELKMessage};
 
 fn main() {
-    let registry = tracing_subscriber::registry()
-        .with(tracing_subscriber::fmt::subscriber().with_target(false));
-    let subscriber = tracing_syslog::Subscriber::<Formatter3164, ELKMessage>::builder().finish();
-    registry.with(subscriber).init();
+    //let syslog_layer = tracing_syslog::Layer::<Formatter3164, ELKMessage>::builder().finish();
+    let syslog_layer = tracing_syslog::Layer::builder().finish();
+    tracing_subscriber::registry()
+        .with(syslog_layer)
+        .init();
     event!(Level::INFO, key_one = "value_one", key_two = "value_two");
 }
