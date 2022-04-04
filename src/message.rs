@@ -14,11 +14,15 @@ impl SyslogMessage for ELKMessage {
             .map(|(key, value)| format!("{:?}: {}", key, value))
             .collect::<Vec<_>>()
             .join(", ");
-        let now = chrono::Local::now().format("%Y-%m-%dT%H:%M:%S%z").to_string();
+        let now = chrono::Local::now()
+            .format("%Y-%m-%dT%H:%M:%S%z")
+            .to_string();
         format!(
             "{{{:?}: {:?}, {:?}: {:?}, {}}}",
-            "@timestamp", now,
-            "hostname", HOSTNAME.to_string(),
+            "@timestamp",
+            now,
+            "hostname",
+            HOSTNAME.to_string(),
             formatted,
         )
     }

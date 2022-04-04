@@ -1,14 +1,14 @@
 mod backend;
 mod format;
+mod layer;
 mod message;
 mod syslog;
-mod subscriber;
 
+pub use backend::LoggerBackendBuilder;
 pub use format::{Facilities, Formatter3164, Severity, SyslogFormat};
+pub use layer::Layer;
 pub use message::{ELKMessage, SyslogMessage};
 pub use syslog::*;
-pub use subscriber::{Subscriber, SubscriberBuilder};
-pub use backend::LoggerBackendBuilder;
 
 #[macro_use]
 extern crate lazy_static;
